@@ -1,0 +1,10 @@
+{
+  "name": "echo1",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "femonofsky",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
