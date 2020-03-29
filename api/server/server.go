@@ -9,6 +9,7 @@ import (
 
 	RouterFactory "github.com/femonofsky/go-complete-learning/api/router"
 	"github.com/gorilla/handlers"
+	"xorm.io/xorm"
 )
 
 // Server - this  is the server object
@@ -25,7 +26,7 @@ func (s *Server) Start() {
 }
 
 // NewServer - create a new server
-func NewServer(port int) *Server {
+func NewServer(port int, db *xorm.Engine) *Server {
 	var server Server
 
 	server.Port = port
@@ -34,15 +35,19 @@ func NewServer(port int) *Server {
 	router := RouterFactory.NewRouter()
 
 	handler := handlers.LoggingHandler(os.Stdout, handlers.CORS(
-		handlers.AllowedOrigins([]string{'*'}),
-		handlers.AllowedMethods([]string{"GET", "POST","PUT","DELETE", "OPTIONS","PATCH"}),
-		handlers.AllowedHeaders([]string{"Content-Type","Origin","Cache-Control","X-App-Token"})
-
+		handlers.AllowedOrigins([]string{"*"}),
+		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"}),
+		handlers.AllowedHeaders([]string{"Content-Type", "Origin", "Cache-Control", "X-App-Token"}),
+		handlers.ExposedHeaders([]string{}),
+		handlers.MaxAge(1000),
+		handlers.AllowCredentials(),
 	)(router.Router))
+
+	handler = handlers.RecoveryHandler(handlers.PrintRecoveryStack(true))(handler)
 
 	server.HTTPServer = &http.Server{
 		Addr:           server.Addr,
-		Handler:        router.Router,
+		Handler:        handler,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
