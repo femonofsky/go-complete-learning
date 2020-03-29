@@ -1,0 +1,10 @@
+{
+  "dev": {
+    "host": "localhost",
+    "user": "postgres",
+    "password" : "",
+    "database": "appconnectdb",
+    "driver": "pg",
+    "multipleStatements": true
+  }
+}
