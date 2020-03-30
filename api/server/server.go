@@ -32,7 +32,7 @@ func NewServer(port int, db *xorm.Engine) *Server {
 	server.Port = port
 	server.Addr = ":" + strconv.Itoa(port)
 
-	router := RouterFactory.NewRouter()
+	router := RouterFactory.NewRouter(db)
 
 	handler := handlers.LoggingHandler(os.Stdout, handlers.CORS(
 		handlers.AllowedOrigins([]string{"*"}),

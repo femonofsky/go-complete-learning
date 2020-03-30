@@ -6,6 +6,7 @@ import (
 	Routes "github.com/femonofsky/go-complete-learning/api/router/routes"
 	V1Routes "github.com/femonofsky/go-complete-learning/api/router/routes/v1"
 	"github.com/gorilla/mux"
+	"xorm.io/xorm"
 )
 
 const (
@@ -41,7 +42,7 @@ func (r *RouteHandler) AttachSubRouterWithMiddleware(
 }
 
 // NewRouter - create a new router
-func NewRouter() *RouteHandler {
+func NewRouter(db *xorm.Engine) *RouteHandler {
 	var router RouteHandler
 
 	router.Router = mux.NewRouter().StrictSlash(true)
@@ -52,7 +53,7 @@ func NewRouter() *RouteHandler {
 
 	router.Router.Use(Routes.Middleware)
 
-	routes := Routes.GetRoutes()
+	routes := Routes.GetRoutes(db)
 
 	for _, route := range routes {
 		router.Router.
@@ -61,7 +62,7 @@ func NewRouter() *RouteHandler {
 			Name(route.Name).
 			Handler(route.HandlerFunc)
 	}
-	v1subroutes := V1Routes.GetRoutes()
+	v1subroutes := V1Routes.GetRoutes(db)
 
 	for name, pack := range v1subroutes {
 		router.AttachSubRouterWithMiddleware(name, pack.Routes, pack.Middleware)

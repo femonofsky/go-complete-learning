@@ -2,6 +2,8 @@ package routes
 
 import (
 	"net/http"
+
+	"xorm.io/xorm"
 )
 
 // Middleware - this is the main middleware for the application
@@ -12,20 +14,20 @@ func Middleware(next http.Handler) http.Handler {
 }
 
 //GetRoutes -
-func GetRoutes() Routes {
+func GetRoutes(db *xorm.Engine) Routes {
 
 	return Routes{
 		Route{
 			Name:        "HealthCheck",
 			Method:      "GET",
 			Pattern:     "/health",
-			HandlerFunc: Health(),
+			HandlerFunc: Health(db),
 		},
 		Route{
 			Name:        "Login",
 			Method:      "POST",
 			Pattern:     "/auth/login",
-			HandlerFunc: Login(),
+			HandlerFunc: Login(db),
 		},
 	}
 }
